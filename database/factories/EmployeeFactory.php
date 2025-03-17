@@ -13,7 +13,6 @@ class EmployeeFactory extends Factory
     public function definition(): array
     {
         return [
-            'id' => Str::random(25), // Genera un ID aleatorio de 25 caracteres
             'name' => $this->faker->name, // Solo un campo 'name'
             'alias' => $this->faker->optional()->companySuffix,
             'employee_id' => $this->faker->unique()->randomNumber(5),

@@ -9,7 +9,7 @@ class CreateSuppliersTable extends Migration
     public function up(): void
     {
         Schema::create('suppliers', function (Blueprint $table) {
-            $table->string('id', 25)->primary(); // ID con 25 caracteres
+            $table->string('id', 20)->primary(); 
             $table->string('name');
             $table->string('alias')->nullable();
             $table->string('tax_id')->nullable();
