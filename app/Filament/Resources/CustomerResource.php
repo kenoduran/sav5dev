@@ -7,6 +7,7 @@ use App\Models\Customer;
 use Filament\Forms;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 
 class CustomerResource extends Resource
 {
@@ -15,9 +16,7 @@ class CustomerResource extends Resource
     protected static ?string $navigationLabel = 'Customers';
     protected static ?string $pluralLabel = 'Customers';
     protected static ?string $modelLabel = 'Customer';
-
     protected static ?string $navigationGroup = 'Catalogs';
-    
 
     public static function form(Forms\Form $form): Forms\Form
     {
@@ -25,9 +24,8 @@ class CustomerResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('id')
                     ->label('Customer ID')
-                    ->maxLength(25)
-                    ->unique()
-                    ->required(),
+                    ->disabled()
+                    ->dehydrated(false), // No lo envía en la solicitud
 
                 Forms\Components\TextInput::make('name')
                     ->label('Full Name')
@@ -39,13 +37,14 @@ class CustomerResource extends Resource
 
                 Forms\Components\TextInput::make('tax_id')
                     ->label('Tax ID')
-                    ->unique()
-                    ->maxLength(50),
+                    ->maxLength(50)
+                    ->unique(fn($get) => $get('record') ? Customer::where('tax_id', $get('tax_id'))->where('id', '!=', $get('record')->id)->exists() : false), // Validación de único tax_id al editar
 
                 Forms\Components\TextInput::make('email')
+                    ->label('Email')
                     ->email()
-                    ->unique()
-                    ->required(),
+                    ->required()
+                    ->unique(fn($get) => $get('record') ? Customer::where('email', $get('email'))->where('id', '!=', $get('record')->id)->exists() : false), // Validación de único email al editar
 
                 Forms\Components\TextInput::make('phone')
                     ->label('Phone')
@@ -95,15 +94,23 @@ class CustomerResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')->label('ID')->searchable(),
-                Tables\Columns\TextColumn::make('name')->label('Name')->searchable(),
-                Tables\Columns\TextColumn::make('alias')->label('Alias'),
-                Tables\Columns\TextColumn::make('tax_id')->label('Tax ID')->searchable(),
-                Tables\Columns\TextColumn::make('email')->label('Email')->searchable(),
-                Tables\Columns\TextColumn::make('phone')->label('Phone'),
-                Tables\Columns\TextColumn::make('website')->label('Website'),
-                Tables\Columns\TextColumn::make('contact_person')->label('Contact Person'),
-                Tables\Columns\TextColumn::make('created_at')->label('Created')->date(),
+                TextColumn::make('id')->sortable()->toggleable(isToggledHiddenByDefault: true)->searchable(),
+                TextColumn::make('name')->sortable()->toggleable()->searchable(),
+                TextColumn::make('alias')->sortable()->toggleable()->searchable(),
+                TextColumn::make('tax_id')->sortable()->toggleable()->searchable(),
+                TextColumn::make('email')->sortable()->toggleable()->searchable(),
+                TextColumn::make('phone')->sortable()->toggleable()->searchable(),
+                TextColumn::make('secondary_phone')->sortable()->toggleable()->searchable(),
+                TextColumn::make('website')->sortable()->toggleable()->searchable(),
+                TextColumn::make('contact_person')->sortable()->toggleable()->searchable(),
+                TextColumn::make('contact_email')->sortable()->toggleable()->searchable(),
+                TextColumn::make('contact_phone')->sortable()->toggleable()->searchable(),
+                TextColumn::make('city')->sortable()->toggleable()->searchable(),
+                TextColumn::make('state')->sortable()->toggleable()->searchable(),
+                TextColumn::make('zip_code')->sortable()->toggleable()->searchable(),
+                TextColumn::make('country')->sortable()->toggleable()->searchable(),
+                TextColumn::make('created_at')->sortable()->toggleable(),
+                TextColumn::make('updated_at')->sortable()->toggleable(),
             ])
             ->filters([
                 // Puedes agregar filtros personalizados aquí

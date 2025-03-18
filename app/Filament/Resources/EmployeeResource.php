@@ -24,16 +24,11 @@ class EmployeeResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('id')
                     ->label('Employee ID')
-                    ->maxLength(25)
-                    ->unique()
-                    ->required(),
+                    ->disabled()
+                    ->dehydrated(false), // No lo envía en la solicitud
 
-                Forms\Components\TextInput::make('first_name')
-                    ->label('First Name')
-                    ->required(),
-
-                Forms\Components\TextInput::make('last_name')
-                    ->label('Last Name')
+                Forms\Components\TextInput::make('name')
+                    ->label('Name')
                     ->required(),
 
                 Forms\Components\TextInput::make('alias')
@@ -42,12 +37,12 @@ class EmployeeResource extends Resource
 
                 Forms\Components\TextInput::make('employee_id')
                     ->label('Employee ID Number')
-                    ->unique()
+                    ->unique(ignoreRecord: true)  // Permite la edición sin validar el ID como único
                     ->maxLength(50),
 
                 Forms\Components\TextInput::make('email')
                     ->email()
-                    ->unique()
+                    ->unique(ignoreRecord: true)  // Permite la edición sin validar el email como único
                     ->required(),
 
                 Forms\Components\TextInput::make('phone')
@@ -101,17 +96,16 @@ class EmployeeResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')->label('ID')->searchable(),
-                Tables\Columns\TextColumn::make('first_name')->label('First Name')->searchable(),
-                Tables\Columns\TextColumn::make('last_name')->label('Last Name')->searchable(),
-                Tables\Columns\TextColumn::make('alias')->label('Alias'),
-                Tables\Columns\TextColumn::make('employee_id')->label('Employee ID')->searchable(),
-                Tables\Columns\TextColumn::make('email')->label('Email')->searchable(),
-                Tables\Columns\TextColumn::make('phone')->label('Phone'),
-                Tables\Columns\TextColumn::make('position')->label('Position'),
-                Tables\Columns\TextColumn::make('department')->label('Department'),
-                Tables\Columns\TextColumn::make('hire_date')->label('Hire Date')->date(),
-                Tables\Columns\TextColumn::make('salary')->label('Salary')->money('USD'),
+                Tables\Columns\TextColumn::make('id')->label('ID')->searchable()->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('name')->label('Name')->toggleable()->searchable(),
+                Tables\Columns\TextColumn::make('alias')->label('Alias')->toggleable()->searchable(),
+                Tables\Columns\TextColumn::make('employee_id')->label('Employee ID')->toggleable()->searchable(),
+                Tables\Columns\TextColumn::make('email')->label('Email')->toggleable()->searchable(),
+                Tables\Columns\TextColumn::make('phone')->label('Phone')->toggleable()->searchable(),
+                Tables\Columns\TextColumn::make('position')->label('Position')->toggleable()->searchable(),
+                Tables\Columns\TextColumn::make('department')->label('Department')->toggleable()->searchable(),
+                Tables\Columns\TextColumn::make('hire_date')->label('Hire Date')->date()->toggleable()->searchable(),
+                Tables\Columns\TextColumn::make('salary')->label('Salary')->money('USD')->toggleable()->searchable(),
                 Tables\Columns\TextColumn::make('created_at')->label('Created')->date(),
             ])
             ->filters([

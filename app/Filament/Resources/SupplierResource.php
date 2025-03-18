@@ -24,9 +24,8 @@ class SupplierResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('id')
                     ->label('Supplier ID')
-                    ->maxLength(25)
-                    ->unique()
-                    ->required(),
+                    ->disabled()
+                    ->dehydrated(false), // No lo envía en la solicitud
 
                 Forms\Components\TextInput::make('name')
                     ->label('Company Name')
@@ -38,13 +37,14 @@ class SupplierResource extends Resource
 
                 Forms\Components\TextInput::make('tax_id')
                     ->label('Tax ID')
-                    ->unique()
-                    ->maxLength(50),
+                    ->unique(fn($get) => $get('record') ? Supplier::where('tax_id', $get('tax_id'))->where('id', '!=', $get('record')->id)->exists() : false) // Validación de único tax_id al editar
+                    ->maxLength(50)
+                    ->required(),
 
                 Forms\Components\TextInput::make('email')
                     ->email()
-                    ->unique()
-                    ->required(),
+                    ->required()
+                    ->unique(fn($get) => $get('record') ? Supplier::where('email', $get('email'))->where('id', '!=', $get('record')->id)->exists() : false), // Validación de único correo al editar
 
                 Forms\Components\TextInput::make('phone')
                     ->label('Phone')
@@ -94,15 +94,46 @@ class SupplierResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')->label('ID')->searchable(),
-                Tables\Columns\TextColumn::make('name')->label('Company Name')->searchable(),
-                Tables\Columns\TextColumn::make('alias')->label('Alias'),
-                Tables\Columns\TextColumn::make('tax_id')->label('Tax ID')->searchable(),
-                Tables\Columns\TextColumn::make('email')->label('Email')->searchable(),
-                Tables\Columns\TextColumn::make('phone')->label('Phone'),
-                Tables\Columns\TextColumn::make('website')->label('Website'),
-                Tables\Columns\TextColumn::make('contact_person')->label('Contact Person'),
-                Tables\Columns\TextColumn::make('created_at')->label('Created')->date(),
+                Tables\Columns\TextColumn::make('id')
+                    ->label('ID')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Company Name')
+                    ->searchable()
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('alias')
+                    ->label('Alias')
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('tax_id')
+                    ->label('Tax ID')
+                    ->searchable()
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('email')
+                    ->label('Email')
+                    ->searchable()
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('phone')
+                    ->label('Phone')
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('website')
+                    ->label('Website')
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('contact_person')
+                    ->label('Contact Person')
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Created')
+                    ->date()
+                    ->toggleable(),
             ])
             ->filters([
                 // Puedes agregar filtros personalizados aquí
