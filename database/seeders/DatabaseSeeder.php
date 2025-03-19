@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             SuppliersTableSeeder::class,
             EmployeesTableSeeder::class,
             ProductsTableSeeder::class,
+            ToolsTableSeeder::class,
         ]);
 
         // Crear 25 clientes
