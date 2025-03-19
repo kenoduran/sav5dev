@@ -29,7 +29,8 @@ class CustomerResource extends Resource
 
                 Forms\Components\TextInput::make('name')
                     ->label('Full Name')
-                    ->required(),
+                    ->required()
+                    ->maxLength(255),
 
                 Forms\Components\TextInput::make('alias')
                     ->label('Alias')
@@ -38,55 +39,68 @@ class CustomerResource extends Resource
                 Forms\Components\TextInput::make('tax_id')
                     ->label('Tax ID')
                     ->maxLength(50)
-                    ->unique(fn($get) => $get('record') ? Customer::where('tax_id', $get('tax_id'))->where('id', '!=', $get('record')->id)->exists() : false), // Validación de único tax_id al editar
+                    ->unique(Customer::class, 'tax_id', ignoreRecord: true), // Validación de unicidad corregida
 
                 Forms\Components\TextInput::make('email')
                     ->label('Email')
                     ->email()
                     ->required()
-                    ->unique(fn($get) => $get('record') ? Customer::where('email', $get('email'))->where('id', '!=', $get('record')->id)->exists() : false), // Validación de único email al editar
+                    ->maxLength(255)
+                    ->unique(Customer::class, 'email', ignoreRecord: true), // Validación de unicidad corregida
 
                 Forms\Components\TextInput::make('phone')
                     ->label('Phone')
-                    ->tel(),
+                    ->tel()
+                    ->maxLength(20),
 
                 Forms\Components\TextInput::make('secondary_phone')
                     ->label('Secondary Phone')
-                    ->tel(),
+                    ->tel()
+                    ->maxLength(20),
 
                 Forms\Components\TextInput::make('website')
                     ->label('Website')
-                    ->url(),
+                    ->url()
+                    ->maxLength(255),
 
                 Forms\Components\TextInput::make('contact_person')
-                    ->label('Contact Person'),
+                    ->label('Contact Person')
+                    ->maxLength(100),
 
                 Forms\Components\TextInput::make('contact_email')
                     ->label('Contact Email')
-                    ->email(),
+                    ->email()
+                    ->maxLength(255),
 
                 Forms\Components\TextInput::make('contact_phone')
                     ->label('Contact Phone')
-                    ->tel(),
+                    ->tel()
+                    ->maxLength(20),
 
                 Forms\Components\TextInput::make('address')
-                    ->label('Address'),
+                    ->label('Address')
+                    ->maxLength(255),
 
                 Forms\Components\TextInput::make('city')
-                    ->label('City'),
+                    ->label('City')
+                    ->maxLength(100),
 
                 Forms\Components\TextInput::make('state')
-                    ->label('State'),
+                    ->label('State')
+                    ->maxLength(100),
 
                 Forms\Components\TextInput::make('zip_code')
-                    ->label('ZIP Code'),
+                    ->label('ZIP Code')
+                    ->maxLength(20),
 
                 Forms\Components\TextInput::make('country')
-                    ->label('Country'),
+                    ->label('Country')
+                    ->maxLength(100),
 
                 Forms\Components\Textarea::make('notes')
                     ->label('Additional Notes')
-                    ->rows(3),
+                    ->rows(3)
+                    ->maxLength(1000),
             ]);
     }
 
@@ -94,23 +108,91 @@ class CustomerResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('id')->sortable()->toggleable(isToggledHiddenByDefault: true)->searchable(),
-                TextColumn::make('name')->sortable()->toggleable()->searchable(),
-                TextColumn::make('alias')->sortable()->toggleable()->searchable(),
-                TextColumn::make('tax_id')->sortable()->toggleable()->searchable(),
-                TextColumn::make('email')->sortable()->toggleable()->searchable(),
-                TextColumn::make('phone')->sortable()->toggleable()->searchable(),
-                TextColumn::make('secondary_phone')->sortable()->toggleable()->searchable(),
-                TextColumn::make('website')->sortable()->toggleable()->searchable(),
-                TextColumn::make('contact_person')->sortable()->toggleable()->searchable(),
-                TextColumn::make('contact_email')->sortable()->toggleable()->searchable(),
-                TextColumn::make('contact_phone')->sortable()->toggleable()->searchable(),
-                TextColumn::make('city')->sortable()->toggleable()->searchable(),
-                TextColumn::make('state')->sortable()->toggleable()->searchable(),
-                TextColumn::make('zip_code')->sortable()->toggleable()->searchable(),
-                TextColumn::make('country')->sortable()->toggleable()->searchable(),
-                TextColumn::make('created_at')->sortable()->toggleable(),
-                TextColumn::make('updated_at')->sortable()->toggleable(),
+                TextColumn::make('id')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
+                
+                TextColumn::make('name')
+                    ->sortable()
+                    ->toggleable()
+                    ->searchable(),
+                
+                TextColumn::make('alias')
+                    ->sortable()
+                    ->toggleable()
+                    ->searchable(),
+                
+                TextColumn::make('tax_id')
+                    ->sortable()
+                    ->toggleable()
+                    ->searchable(),
+                
+                TextColumn::make('email')
+                    ->sortable()
+                    ->toggleable()
+                    ->searchable(),
+                
+                TextColumn::make('phone')
+                    ->sortable()
+                    ->toggleable()
+                    ->searchable(),
+                
+                TextColumn::make('secondary_phone')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
+                
+                TextColumn::make('website')
+                    ->sortable()
+                    ->toggleable()
+                    ->url(fn (Customer $record): string => $record->website)
+                    ->searchable(),
+                
+                TextColumn::make('contact_person')
+                    ->sortable()
+                    ->toggleable()
+                    ->searchable(),
+                
+                TextColumn::make('contact_email')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
+                
+                TextColumn::make('contact_phone')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
+                
+                TextColumn::make('city')
+                    ->sortable()
+                    ->toggleable()
+                    ->searchable(),
+                
+                TextColumn::make('state')
+                    ->sortable()
+                    ->toggleable()
+                    ->searchable(),
+                
+                TextColumn::make('zip_code')
+                    ->sortable()
+                    ->toggleable()
+                    ->searchable(),
+                
+                TextColumn::make('country')
+                    ->sortable()
+                    ->toggleable()
+                    ->searchable(),
+                
+                TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(),
+                
+                TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 // Puedes agregar filtros personalizados aquí
@@ -118,6 +200,11 @@ class CustomerResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
             ]);
     }
 

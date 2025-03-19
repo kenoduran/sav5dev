@@ -9,18 +9,28 @@ use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash; // Importar la clase Hash
 
+
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+
+
+        $this->call([
+            CustomersTableSeeder::class,
+            SuppliersTableSeeder::class,
+            EmployeesTableSeeder::class,
+            ProductsTableSeeder::class,
+        ]);
+
         // Crear 25 clientes
-        Customer::factory()->count(25)->create();
+        //Customer::factory()->count(25)->create();
 
         // Crear 15 proveedores
-        Supplier::factory()->count(15)->create();
+        //Supplier::factory()->count(15)->create();
 
         // Crear 8 empleados
-        Employee::factory()->count(8)->create();
+        //Employee::factory()->count(8)->create();
 
         // Crear un usuario con nombre "Keno Duran", email "keno@mail.com" y contraseña "1234"
         User::create([

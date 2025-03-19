@@ -29,7 +29,8 @@ class EmployeeResource extends Resource
 
                 Forms\Components\TextInput::make('name')
                     ->label('Name')
-                    ->required(),
+                    ->required()
+                    ->maxLength(255),
 
                 Forms\Components\TextInput::make('alias')
                     ->label('Alias')
@@ -37,58 +38,74 @@ class EmployeeResource extends Resource
 
                 Forms\Components\TextInput::make('employee_id')
                     ->label('Employee ID Number')
-                    ->unique(ignoreRecord: true)  // Permite la edición sin validar el ID como único
-                    ->maxLength(50),
+                    ->unique(Employee::class, 'employee_id', ignoreRecord: true)  // Forma correcta y explícita de validación
+                    ->maxLength(50)
+                    ->required(),
 
                 Forms\Components\TextInput::make('email')
+                    ->label('Email')
                     ->email()
-                    ->unique(ignoreRecord: true)  // Permite la edición sin validar el email como único
-                    ->required(),
+                    ->unique(Employee::class, 'email', ignoreRecord: true)  // Forma correcta y explícita de validación
+                    ->required()
+                    ->maxLength(255),
 
                 Forms\Components\TextInput::make('phone')
                     ->label('Phone')
-                    ->tel(),
+                    ->tel()
+                    ->maxLength(20),
 
                 Forms\Components\TextInput::make('secondary_phone')
                     ->label('Secondary Phone')
-                    ->tel(),
+                    ->tel()
+                    ->maxLength(20),
 
                 Forms\Components\TextInput::make('position')
-                    ->label('Position'),
+                    ->label('Position')
+                    ->maxLength(100),
 
                 Forms\Components\TextInput::make('department')
-                    ->label('Department'),
+                    ->label('Department')
+                    ->maxLength(100),
 
                 Forms\Components\DatePicker::make('hire_date')
-                    ->label('Hire Date'),
+                    ->label('Hire Date')
+                    ->default(now()),
 
                 Forms\Components\TextInput::make('salary')
                     ->label('Salary')
                     ->numeric()
-                    ->prefix('$'),
+                    ->prefix('$')
+                    ->minValue(0),
 
                 Forms\Components\TextInput::make('website')
                     ->label('Personal Website')
-                    ->url(),
+                    ->url()
+                    ->maxLength(255),
 
                 Forms\Components\TextInput::make('address')
-                    ->label('Address'),
+                    ->label('Address')
+                    ->maxLength(255),
 
                 Forms\Components\TextInput::make('city')
-                    ->label('City'),
+                    ->label('City')
+                    ->maxLength(100),
 
                 Forms\Components\TextInput::make('state')
-                    ->label('State'),
+                    ->label('State')
+                    ->maxLength(100),
 
                 Forms\Components\TextInput::make('zip_code')
-                    ->label('ZIP Code'),
+                    ->label('ZIP Code')
+                    ->maxLength(20),
 
                 Forms\Components\TextInput::make('country')
-                    ->label('Country'),
+                    ->label('Country')
+                    ->maxLength(100),
 
                 Forms\Components\Textarea::make('notes')
                     ->label('Additional Notes')
-                    ->rows(3),
+                    ->rows(3)
+                    ->maxLength(1000),
             ]);
     }
 
@@ -96,17 +113,76 @@ class EmployeeResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')->label('ID')->searchable()->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('name')->label('Name')->toggleable()->searchable(),
-                Tables\Columns\TextColumn::make('alias')->label('Alias')->toggleable()->searchable(),
-                Tables\Columns\TextColumn::make('employee_id')->label('Employee ID')->toggleable()->searchable(),
-                Tables\Columns\TextColumn::make('email')->label('Email')->toggleable()->searchable(),
-                Tables\Columns\TextColumn::make('phone')->label('Phone')->toggleable()->searchable(),
-                Tables\Columns\TextColumn::make('position')->label('Position')->toggleable()->searchable(),
-                Tables\Columns\TextColumn::make('department')->label('Department')->toggleable()->searchable(),
-                Tables\Columns\TextColumn::make('hire_date')->label('Hire Date')->date()->toggleable()->searchable(),
-                Tables\Columns\TextColumn::make('salary')->label('Salary')->money('USD')->toggleable()->searchable(),
-                Tables\Columns\TextColumn::make('created_at')->label('Created')->date(),
+                Tables\Columns\TextColumn::make('id')
+                    ->label('ID')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Name')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+                
+                Tables\Columns\TextColumn::make('alias')
+                    ->label('Alias')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+                
+                Tables\Columns\TextColumn::make('employee_id')
+                    ->label('Employee ID')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+                
+                Tables\Columns\TextColumn::make('email')
+                    ->label('Email')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+                
+                Tables\Columns\TextColumn::make('phone')
+                    ->label('Phone')
+                    ->searchable()
+                    ->toggleable(),
+                
+                Tables\Columns\TextColumn::make('position')
+                    ->label('Position')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+                
+                Tables\Columns\TextColumn::make('department')
+                    ->label('Department')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+                
+                Tables\Columns\TextColumn::make('hire_date')
+                    ->label('Hire Date')
+                    ->date()
+                    ->sortable()
+                    ->toggleable(),
+                
+                Tables\Columns\TextColumn::make('salary')
+                    ->label('Salary')
+                    ->money('USD')
+                    ->sortable()
+                    ->toggleable(),
+                
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Created')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(),
+                    
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Updated')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 // Puedes agregar filtros personalizados aquí
@@ -114,6 +190,11 @@ class EmployeeResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
             ]);
     }
 

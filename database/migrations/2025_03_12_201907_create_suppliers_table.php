@@ -9,25 +9,24 @@ class CreateSuppliersTable extends Migration
     public function up(): void
     {
         Schema::create('suppliers', function (Blueprint $table) {
-            TextColumn::make('id')->sortable()->toggleable()->searchable(),
-            TextColumn::make('name')->sortable()->toggleable()->searchable(),
-            TextColumn::make('alias')->sortable()->toggleable()->searchable(),
-            TextColumn::make('tax_id')->sortable()->toggleable()->searchable(),
-            TextColumn::make('email')->sortable()->toggleable()->searchable(),
-            TextColumn::make('phone')->sortable()->toggleable()->searchable(),
-            TextColumn::make('secondary_phone')->sortable()->toggleable()->searchable(),
-            TextColumn::make('website')->sortable()->toggleable()->searchable(),
-            TextColumn::make('contact_person')->sortable()->toggleable()->searchable(),
-            TextColumn::make('contact_email')->sortable()->toggleable()->searchable(),
-            TextColumn::make('contact_phone')->sortable()->toggleable()->searchable(),
-            TextColumn::make('address')->sortable()->toggleable()->searchable(),
-            TextColumn::make('city')->sortable()->toggleable()->searchable(),
-            TextColumn::make('state')->sortable()->toggleable()->searchable(),
-            TextColumn::make('zip_code')->sortable()->toggleable()->searchable(),
-            TextColumn::make('country')->sortable()->toggleable()->searchable(),
-            TextColumn::make('notes')->sortable()->toggleable()->searchable(),
-            TextColumn::make('created_at')->sortable()->toggleable(),
-            TextColumn::make('updated_at')->sortable()->toggleable(),
+            $table->string('id', 25)->primary(); // ID con 25 caracteres
+            $table->string('name');
+            $table->string('alias')->nullable();
+            $table->string('tax_id')->nullable();
+            $table->string('email')->unique();
+            $table->string('phone')->nullable();
+            $table->string('secondary_phone')->nullable();
+            $table->string('website')->nullable();
+            $table->string('contact_person')->nullable();
+            $table->string('contact_email')->nullable();
+            $table->string('contact_phone')->nullable();
+            $table->text('address')->nullable();
+            $table->string('city')->nullable();
+            $table->string('state')->nullable();
+            $table->string('zip_code')->nullable();
+            $table->string('country')->nullable();
+            $table->text('notes')->nullable();
+            $table->timestamps();
         });
     }
 

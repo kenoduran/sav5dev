@@ -29,7 +29,8 @@ class SupplierResource extends Resource
 
                 Forms\Components\TextInput::make('name')
                     ->label('Company Name')
-                    ->required(),
+                    ->required()
+                    ->maxLength(255),
 
                 Forms\Components\TextInput::make('alias')
                     ->label('Alias')
@@ -37,56 +38,69 @@ class SupplierResource extends Resource
 
                 Forms\Components\TextInput::make('tax_id')
                     ->label('Tax ID')
-                    ->unique(fn($get) => $get('record') ? Supplier::where('tax_id', $get('tax_id'))->where('id', '!=', $get('record')->id)->exists() : false) // Validación de único tax_id al editar
+                    ->unique(Supplier::class, 'tax_id', ignoreRecord: true) // Validación corregida
                     ->maxLength(50)
                     ->required(),
 
                 Forms\Components\TextInput::make('email')
+                    ->label('Email')
                     ->email()
                     ->required()
-                    ->unique(fn($get) => $get('record') ? Supplier::where('email', $get('email'))->where('id', '!=', $get('record')->id)->exists() : false), // Validación de único correo al editar
+                    ->unique(Supplier::class, 'email', ignoreRecord: true), // Validación corregida
 
                 Forms\Components\TextInput::make('phone')
                     ->label('Phone')
-                    ->tel(),
+                    ->tel()
+                    ->maxLength(20),
 
                 Forms\Components\TextInput::make('secondary_phone')
                     ->label('Secondary Phone')
-                    ->tel(),
+                    ->tel()
+                    ->maxLength(20),
 
                 Forms\Components\TextInput::make('website')
                     ->label('Website')
-                    ->url(),
+                    ->url()
+                    ->maxLength(255),
 
                 Forms\Components\TextInput::make('contact_person')
-                    ->label('Contact Person'),
+                    ->label('Contact Person')
+                    ->maxLength(100),
 
                 Forms\Components\TextInput::make('contact_email')
                     ->label('Contact Email')
-                    ->email(),
+                    ->email()
+                    ->maxLength(255),
 
                 Forms\Components\TextInput::make('contact_phone')
                     ->label('Contact Phone')
-                    ->tel(),
+                    ->tel()
+                    ->maxLength(20),
 
                 Forms\Components\TextInput::make('address')
-                    ->label('Address'),
+                    ->label('Address')
+                    ->maxLength(255),
 
                 Forms\Components\TextInput::make('city')
-                    ->label('City'),
+                    ->label('City')
+                    ->maxLength(100),
 
                 Forms\Components\TextInput::make('state')
-                    ->label('State'),
+                    ->label('State')
+                    ->maxLength(100),
 
                 Forms\Components\TextInput::make('zip_code')
-                    ->label('ZIP Code'),
+                    ->label('ZIP Code')
+                    ->maxLength(20),
 
                 Forms\Components\TextInput::make('country')
-                    ->label('Country'),
+                    ->label('Country')
+                    ->maxLength(100),
 
                 Forms\Components\Textarea::make('notes')
                     ->label('Additional Notes')
-                    ->rows(3),
+                    ->rows(3)
+                    ->maxLength(1000),
             ]);
     }
 
@@ -97,43 +111,78 @@ class SupplierResource extends Resource
                 Tables\Columns\TextColumn::make('id')
                     ->label('ID')
                     ->searchable()
+                    ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('name')
                     ->label('Company Name')
                     ->searchable()
+                    ->sortable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('alias')
                     ->label('Alias')
+                    ->searchable()
+                    ->sortable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('tax_id')
                     ->label('Tax ID')
                     ->searchable()
+                    ->sortable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('email')
                     ->label('Email')
                     ->searchable()
+                    ->sortable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('phone')
                     ->label('Phone')
+                    ->searchable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('website')
                     ->label('Website')
+                    ->url(fn (Supplier $record): string => $record->website)
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('contact_person')
                     ->label('Contact Person')
+                    ->searchable()
+                    ->toggleable(),
+                
+                Tables\Columns\TextColumn::make('contact_email')
+                    ->label('Contact Email')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                
+                Tables\Columns\TextColumn::make('contact_phone')
+                    ->label('Contact Phone')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                
+                Tables\Columns\TextColumn::make('city')
+                    ->label('City')
+                    ->searchable()
+                    ->toggleable(),
+                
+                Tables\Columns\TextColumn::make('country')
+                    ->label('Country')
+                    ->searchable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Created')
-                    ->date()
+                    ->dateTime()
+                    ->sortable()
                     ->toggleable(),
+                
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Updated')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 // Puedes agregar filtros personalizados aquí
@@ -141,6 +190,11 @@ class SupplierResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
             ]);
     }
 
