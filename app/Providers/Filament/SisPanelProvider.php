@@ -17,6 +17,8 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+// Añadir este import para tu widget
+use App\Filament\Widgets\ProjectSummaryWidget;
 
 class SisPanelProvider extends PanelProvider
 {
@@ -43,8 +45,10 @@ class SisPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                //Widgets\AccountWidget::class,
-                //Widgets\FilamentInfoWidget::class,
+                Widgets\AccountWidget::class,
+                Widgets\FilamentInfoWidget::class,
+                // Usar la clase importada
+                ProjectSummaryWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
