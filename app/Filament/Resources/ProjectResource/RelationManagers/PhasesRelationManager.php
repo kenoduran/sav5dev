@@ -9,6 +9,10 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Infolists\Components;
+use Filament\Infolists\Infolist;
+use Filament\Actions\Action;
+use Filament\Notifications\Notification;
 
 class PhasesRelationManager extends RelationManager
 {
@@ -124,4 +128,100 @@ class PhasesRelationManager extends RelationManager
                 ]),
             ]);
     }
+
+    protected function configureViewAction(Tables\Actions\ViewAction $action): void
+    {
+    $action
+        ->infolist(
+            fn (Infolist $infolist): Infolist => $infolist
+                ->schema([
+                    Components\Section::make('Información de la fase')
+                        ->schema([
+                            Components\TextEntry::make('name')
+                                ->label('Nombre'),
+                            Components\TextEntry::make('description')
+                                ->label('Descripción'),
+                            Components\TextEntry::make('status')
+                                ->label('Estado')
+                                ->badge()
+                                ->color(fn (string $state): string => match ($state) {
+                                    'Completed' => 'success',
+                                    'In Progress' => 'primary',
+                                    'Pending' => 'secondary',
+                                    'Cancelled' => 'danger',
+                                    default => 'gray',
+                                }),
+                            Components\TextEntry::make('progress_percentage')
+                                ->label('Progreso')
+                                ->formatStateUsing(fn ($state) => number_format($state, 2) . '%'),
+                        ]),
+                    
+                    Components\Section::make('Tareas')
+                        ->headerActions([
+                            \Filament\Infolists\Components\Actions\Action::make('createTask')
+                                ->label('Nueva tarea')
+                                ->icon('heroicon-o-plus')
+                                ->form([
+                                    Forms\Components\TextInput::make('name')
+                                        ->label('Nombre de la tarea')
+                                        ->required()
+                                        ->maxLength(255),
+                                    Forms\Components\Textarea::make('description')
+                                        ->label('Descripción')
+                                        ->maxLength(65535),
+                                    Forms\Components\Select::make('status')
+                                        ->label('Estado')
+                                        ->options([
+                                            'Pending' => 'Pendiente',
+                                            'In Progress' => 'En progreso',
+                                            'Completed' => 'Completada',
+                                            'Cancelled' => 'Cancelada',
+                                        ])
+                                        ->default('Pending')
+                                        ->required(),
+                                    Forms\Components\Select::make('responsible_id')
+                                        ->label('Responsable')
+                                        ->relationship('responsible', 'name')
+                                        ->searchable()
+                                        ->preload(),
+                                    Forms\Components\TextInput::make('progress_percentage')
+                                        ->label('Porcentaje de progreso')
+                                        ->numeric()
+                                        ->default(0)
+                                        ->minValue(0)
+                                        ->maxValue(100)
+                                        ->step(0.1)
+                                        ->suffix('%'),
+                                    Forms\Components\Select::make('priority')
+                                        ->label('Prioridad')
+                                        ->options([
+                                            'Low' => 'Baja',
+                                            'Medium' => 'Media',
+                                            'High' => 'Alta',
+                                            'Urgent' => 'Urgente',
+                                        ])
+                                        ->default('Medium')
+                                        ->required(),
+                                ])
+                                ->action(function (array $data, $record): void {
+                                    $data['phase_id'] = $record->id;
+                                    \App\Models\ProjectTask::create($data);
+                                    
+                                    Notification::make()
+                                        ->title('Tarea creada')
+                                        ->success()
+                                        ->send();
+                                        
+                                    $this->getOwnerRecord()->refresh();
+                                })
+                        ])
+                        ->schema([
+                            Components\ViewEntry::make('tasks')
+                                ->label('Lista de tareas')
+                                ->view('filament.infolists.components.tasks-checklist'),
+                        ]),
+                ])
+        );
+    }
+    
 }
