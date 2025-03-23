@@ -13,7 +13,7 @@ class GraficoMuestra1 extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Ingresos',
+                    'label' => 'Egresos',
                     'data' => [125000, 531000, 872000, 234000, 98300, 662000]
                 ]
                 ],

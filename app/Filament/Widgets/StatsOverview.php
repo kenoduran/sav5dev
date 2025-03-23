@@ -14,22 +14,22 @@ class StatsOverview extends BaseWidget
     protected function getStats(): array
     {
         return [
-            Stat::make('Clientes ', '12'),
-            Stat::make('Proyectos', Customer::count())
-                ->description('Proyectos aprobados')
-                ->descriptionIcon('heroicon-m-arrow-down-on-square-stack')
-                ->color('success')
-                ->chart([
-                    6, 4, 9, 5, 3, 7
-                ]),
+         //   Stat::make('Clientes ', '12'),
+         //   Stat::make('Proyectos', Customer::count())
+          //      ->description('Proyectos aprobados')
+           //     ->descriptionIcon('heroicon-m-arrow-down-on-square-stack')
+           //     ->color('success')
+           //     ->chart([
+            //        6, 4, 9, 5, 3, 7
+            //    ]),
 
-            Stat::make('Proyectos', Customer::count())
-                ->description('Proyectos por terminar')
-                ->descriptionIcon('heroicon-m-academic-cap')
-                ->color('danger')
-                ->chart([
-                    6, 4, 9, 5, 3, 7
-                ]),
+          //  Stat::make('Proyectos', Customer::count())
+          //      ->description('Proyectos por terminar')
+          ///      ->descriptionIcon('heroicon-m-academic-cap')
+          //      ->color('danger')
+          //      ->chart([
+          //          6, 4, 9, 5, 3, 7
+          //      ]),
         ];
     }
 }
